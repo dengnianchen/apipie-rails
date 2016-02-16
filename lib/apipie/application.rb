@@ -66,8 +66,9 @@ module Apipie
 
     def routes_for_action(controller, method, args)
       routes = rails_routes.select do |route|
-        controller == route_app_controller(route.app, route) &&
-            method.to_s == route.defaults[:action]
+	    controller_param = route.defaults[:controller].underscore
+        controller_name = "#{controller_param.camelize}Controller"
+        controller.name == controller_name && method.to_s == route.defaults[:action]
       end
 
       Apipie.configuration.routes_formatter.format_routes(routes, args)
