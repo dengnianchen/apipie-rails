@@ -220,17 +220,23 @@ module Apipie
             define_method(:apipie_validations) do
               method_params = self.class._apipie_get_method_params(action_name)
 
+              e = PackedParamErrors.new
+
               if Apipie.configuration.validate_presence?
                 method_params.each do |_, param|
                   # check if required parameters are present
-                  raise ParamMissing.new(param) if param.required && !params.has_key?(param.name)
+                  e.errors << ParamMissing.new(param) if param.required && !params.has_key?(param.name)
                 end
               end
 
               if Apipie.configuration.validate_value?
                 method_params.each do |_, param|
                   # params validations
-                  param.validate(params[:"#{param.name}"]) if params.has_key?(param.name)
+                  begin
+                    param.validate(params[:"#{param.name}"]) if params.has_key?(param.name)
+                  rescue ParamError => err
+                    e.errors << err
+                  end
                 end
               end
 
@@ -239,9 +245,11 @@ module Apipie
               if Apipie.configuration.validate_key?
                 params.reject{|k,_| %w[format controller action].include?(k.to_s) }.each_key do |param|
                   # params allowed
-                  raise UnknownParam.new(param) if method_params.select {|_,p| p.name.to_s == param.to_s}.empty?
+                  e.errors << UnknownParam.new(param) if method_params.select {|_,p| p.name.to_s == param.to_s}.empty?
                 end
               end
+
+              raise e unless e.errors.empty?
 
               if Apipie.configuration.process_value?
                 @api_params ||= {}

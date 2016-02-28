@@ -49,4 +49,12 @@ module Apipie
     end
   end
 
+  class PackedParamErrors < StandardError
+
+    def errors
+      @errors ||= []
+    end
+
+  end
+
 end
