@@ -3,6 +3,14 @@ module Apipie
   class Error < StandardError
   end
 
+  class DslError < Error
+
+    def self.new( desc )
+      super( 'Wrong dsl definition: ' + desc )
+    end
+
+  end
+
   class ParamError < Error
   end
 

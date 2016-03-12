@@ -17,6 +17,10 @@ require "apipie/railtie"
 require 'apipie/extractor'
 require "apipie/version"
 
+# My extention to apipie
+#require 'apipie/dsl_definition_ext'
+#require 'apipie/application_ext'
+
 if Rails.version.start_with?("3.0")
   warn 'Warning: apipie-rails is not going to support Rails 3.0 anymore in future versions'
 end
